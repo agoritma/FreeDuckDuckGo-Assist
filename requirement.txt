@@ -1,0 +1,5 @@
+aiohttp==3.9.5
+asyncio==3.4.3
+fastapi==0.111.0
+pydantic==2.7.1
+uvicorn==0.29.0
