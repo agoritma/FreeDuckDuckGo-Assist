@@ -20,7 +20,6 @@ class DuckDuckAssist():
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
         }
         self.generateDelay = 3600
-        self.newVQDToken = ""
         self.vqdToken = ""
         
     async def getVQDToken(self) -> None:
@@ -29,7 +28,9 @@ class DuckDuckAssist():
         async with aiohttp.ClientSession() as session:
             async with session.get(self.STATUS_URL, headers=getTokenHeader) as response:
                 self.vqdToken = dict(response.headers.items())["x-vqd-4"]
-                print("Token has generated: " + self.vqdToken)
+                print("INFO:\t  Server is running on http://127.0.0.1:8000")
+                print("INFO:\t  See API docs on http://127.0.0.1:8000/docs")
+                print("INFO:\t  Token has successfully generated: " + self.vqdToken)
                     
     async def conversation(self, message:list, model:str, stream:bool):
         conHeader = self.BASE_HEADER
@@ -86,7 +87,6 @@ class DuckDuckAssist():
                             yield '[DONE]'.encode()
                 else:
                     errRespJson = await response.json()
-                    print(errRespJson)
                     errResp = {
                         "detail": [
                             {
