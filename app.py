@@ -7,8 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 
-vqdToken = ""
-
 class DuckDuckAssist():
     def __init__(self) -> None:
         self.STATUS_URL = "https://duckduckgo.com/duckchat/v1/status"
@@ -22,20 +20,20 @@ class DuckDuckAssist():
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
         }
         self.generateDelay = 3600
+        self.newVQDToken = ""
+        self.vqdToken = ""
         
     async def getVQDToken(self) -> None:
-        global vqdToken
         getTokenHeader = self.BASE_HEADER
         getTokenHeader["X-Vqd-Accept"] = "1"
         async with aiohttp.ClientSession() as session:
             async with session.get(self.STATUS_URL, headers=getTokenHeader) as response:
-                vqdToken = dict(response.headers.items())["x-vqd-4"]
-                print("Token has generated: " + vqdToken)
+                self.vqdToken = dict(response.headers.items())["x-vqd-4"]
+                print("Token has generated: " + self.vqdToken)
                     
     async def conversation(self, message:list, model:str, stream:bool):
-        global vqdToken
         conHeader = self.BASE_HEADER
-        conHeader["X-Vqd-4"] = vqdToken
+        conHeader["X-Vqd-4"] = self.vqdToken
         conHeader["Accept"] = "text/event-stream"
         payload = {
             "model": model,
@@ -43,7 +41,7 @@ class DuckDuckAssist():
         }
         async with aiohttp.ClientSession() as session:
             async with session.get(self.STATUS_URL, headers=self.BASE_HEADER) as response:
-                newHeaders = response.headers
+                pass
             
             async with session.post(self.CHAT_URL, headers=conHeader, json=payload) as response:
                 if (response.status == 200):
@@ -88,6 +86,7 @@ class DuckDuckAssist():
                             yield '[DONE]'.encode()
                 else:
                     errRespJson = await response.json()
+                    print(errRespJson)
                     errResp = {
                         "detail": [
                             {
@@ -102,20 +101,18 @@ class DuckDuckAssist():
                     yield json.dumps(errResp).encode()
                     yield "\n".encode()
                     yield "[DONE]".encode()
+                self.vqdToken = dict(response.headers.items())["x-vqd-4"]
     
 app = FastAPI()
 assist = DuckDuckAssist()
 
-origins = [
-    "http://localhost",
-    "http://localhost:8080",
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
@@ -173,4 +170,4 @@ async def httpExceptionHandler(request: Request, exc: HTTPException):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app:app", host="localhost", reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", reload=True)
