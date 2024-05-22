@@ -24,7 +24,7 @@ async def chat(data):
                     except KeyError:
                         pass
             body["messages"].append({"role": "assistant", "content": fullmessage}) #append assistant response for best result
-            print(fullmessage)
+            print(fullmessage, "\n")
 
 while True:
     mess = input(">>> ")
