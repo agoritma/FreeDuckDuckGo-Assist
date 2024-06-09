@@ -28,8 +28,6 @@ class DuckDuckAssist():
         async with aiohttp.ClientSession() as session:
             async with session.get(self.STATUS_URL, headers=getTokenHeader) as response:
                 self.vqdToken = dict(response.headers.items())["x-vqd-4"]
-                print("INFO:\t  Server is running on http://127.0.0.1:8000")
-                print("INFO:\t  See API docs on http://127.0.0.1:8000/docs")
                 print("INFO:\t  Token has successfully generated: " + self.vqdToken)
                     
     async def conversation(self, message:list, model:str, stream:bool):
@@ -170,4 +168,6 @@ async def httpExceptionHandler(request: Request, exc: HTTPException):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app:app", host="0.0.0.0", reload=True)
+    host = "127.0.0.1"
+    port = 8000
+    uvicorn.run("app:app", host=host, port=port, reload=True)
