@@ -174,4 +174,4 @@ async def httpExceptionHandler(request: Request, exc: HTTPException):
 if __name__ == "__main__":
     import uvicorn
     host = "0.0.0.0"
-    uvicorn.run("app:app", host=host, reload=True)
+    uvicorn.run("app.app:app", host=host, reload=True)
