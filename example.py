@@ -11,7 +11,7 @@ body = {
 async def chat(data):
     async with aiohttp.ClientSession() as session:
         fullmessage = ""
-        async with session.post("http://192.168.1.10:8000/api/conversation", json=data) as resp:
+        async with session.post("http://localhost:8000/api/conversation", json=data) as resp:
             async for chunk in resp.content:
                 data_str = chunk.decode("utf-8")
                 json_str = data_str.replace("data: ", "")
