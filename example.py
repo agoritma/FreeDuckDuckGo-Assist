@@ -2,12 +2,6 @@ import aiohttp
 import asyncio
 import json
 
-body = {
-    "model": "gpt-3.5-turbo-0125",
-    "messages": [],
-    "stream": True
-}
-
 async def chat(data):
     async with aiohttp.ClientSession() as session:
         fullmessage = ""
@@ -23,12 +17,18 @@ async def chat(data):
                         fullmessage = data_dict["message"]
                     except KeyError:
                         pass
-            body["messages"].append({"role": "assistant", "content": fullmessage}) #append assistant response for best result
             print(fullmessage, "\n")
 
 while True:
     mess = input(">>> ")
-    messages = body["messages"]
-    messages.append({"role": "user", "content": mess})
-    body["messages"] = messages
+    body = {
+        "model": "gpt-3.5-turbo-0125",
+        "messages": [
+            {
+                "role": "user",
+                "content": mess
+            }
+        ],
+        "stream": True
+    }
     asyncio.run(chat(body))

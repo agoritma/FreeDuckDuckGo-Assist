@@ -21,12 +21,14 @@ class DuckDuckAssist():
         }
         self.generateDelay = 3600
         self.vqdToken = ""
+        self.messageHistory = []
         
     async def getVQDToken(self) -> None:
         getTokenHeader = self.BASE_HEADER
         getTokenHeader["X-Vqd-Accept"] = "1"
         async with aiohttp.ClientSession() as session:
             async with session.get(self.STATUS_URL, headers=getTokenHeader) as response:
+                self.messageHistory = []
                 self.vqdToken = dict(response.headers.items())["x-vqd-4"]
                 print("INFO:\t  Token has successfully generated: " + self.vqdToken)
                     
@@ -34,10 +36,12 @@ class DuckDuckAssist():
         conHeader = self.BASE_HEADER
         conHeader["X-Vqd-4"] = self.vqdToken
         conHeader["Accept"] = "text/event-stream"
+        self.messageHistory.append(message[0])
         payload = {
             "model": model,
-            "messages": message
+            "messages": self.messageHistory
         }
+        print(payload)
         async with aiohttp.ClientSession() as session:
             async with session.get(self.STATUS_URL, headers=self.BASE_HEADER) as response:
                 pass
@@ -77,6 +81,7 @@ class DuckDuckAssist():
                                     yield json.dumps(resp).encode("utf-8")
                                     yield "\n".encode()
                     else:
+                        self.messageHistory.append({"role": "assistant", "content": fullMessage})
                         if stream:
                             yield '[DONE]'.encode()
                         else:
