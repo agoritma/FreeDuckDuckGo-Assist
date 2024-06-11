@@ -25,7 +25,7 @@ async def root():
         "example": "https://github.com/jokosantosi/FreeDuckDuckGo-Assist/blob/main/example.py"
     }
     
-@app.get("/get-token")
+@app.get("/api/get-token")
 async def getToken():
     try:
         token = await asyncio.create_task(assist.getVQDToken())
