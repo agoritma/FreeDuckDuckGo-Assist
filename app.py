@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from duckassist import DuckDuckAssist
+from pydantic import BaseModel
     
 app = FastAPI()
 assist = DuckDuckAssist()
@@ -39,14 +40,18 @@ async def getToken():
             "status": 500,
             "message": "Failed createing a token"
         }
-    
+
+class ConversationBody(BaseModel):
+    token: str
+    message:list = [{
+        "role": "user",
+        "content": ""
+    }]
+    stream:bool
+
 @app.post("/api/conversation")
-async def conversation(token:str, message:str, stream:bool):
-    data = {
-            "role": "user",
-            "content": message
-        }
-    resp = StreamingResponse(assist.conversation(token, data, stream=stream), media_type="text/event-stream")
+async def conversation(body: ConversationBody):
+    resp = StreamingResponse(assist.conversation(body.token , body.message, body.stream), media_type="text/event-stream")
     return resp
 
 if __name__ == "__main__":

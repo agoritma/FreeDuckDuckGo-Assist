@@ -22,16 +22,14 @@ class DuckDuckAssist():
                 vqdToken = dict(response.headers.items())["x-vqd-4"]
                 return vqdToken
                     
-    async def conversation(self, token:str, message:object, stream:bool):
+    async def conversation(self, token:str, message:list, stream:bool):
         conHeader = self.BASE_HEADER
         conHeader["X-Vqd-4"] = token
         conHeader["Accept"] = "text/event-stream"
         
         payload = {
             "model": "gpt-3.5-turbo-0125",
-            "messages": [
-                message
-            ]
+            "messages": message
         }
         async with aiohttp.ClientSession() as session:
             async with session.get(self.STATUS_URL, headers=self.BASE_HEADER) as response:
