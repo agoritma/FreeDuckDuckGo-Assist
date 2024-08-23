@@ -28,7 +28,7 @@ class DuckDuckAssist():
         conHeader["Accept"] = "text/event-stream"
         
         payload = {
-            "model": "gpt-3.5-turbo-0125",
+            "model": "gpt-4o-mini",
             "messages": message
         }
         async with aiohttp.ClientSession() as session:
