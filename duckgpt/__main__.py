@@ -1,9 +1,9 @@
 import os
 import asyncio
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
-from src.duckassist import DuckDuckAssist
+from duckgpt.duckassist import DuckDuckAssist
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
@@ -29,7 +29,7 @@ async def getToken():
         token = await asyncio.create_task(assist.getVQDToken())
         return {"message": "Success creating a token", "token": token}
     except:
-        return {"status": 500, "message": "Failed createing a token"}
+        return HTTPException(500, "Error creating a token")
 
 
 class ConversationBody(BaseModel):
@@ -47,8 +47,7 @@ async def completions(body: ConversationBody):
         )
     else:
         resp = StreamingResponse(
-            assist.completions(body.token, body.message),
-            media_type="text/event-stream",
+            assist.completions(body.token, body.message), media_type="text/plain"
         )
     return resp
 
@@ -59,4 +58,4 @@ if __name__ == "__main__":
     HOST = os.getenv("BASE_API_HOST")
     PORT = os.getenv("BASE_API_PORT")
 
-    uvicorn.run("main:app", host=HOST, port=int(PORT), reload=True)
+    uvicorn.run("duckgpt.__main__:app", host=HOST, port=int(PORT), reload=True)
