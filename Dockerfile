@@ -16,4 +16,4 @@ WORKDIR /app
 
 RUN uv sync --frozen --no-cache
 
-CMD [ "/app/.venv/bin/uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000" ]
+CMD [ "/app/.venv/bin/uvicorn", "duckgpt.main:app", "--host", "0.0.0.0", "--port", "8000" ]
