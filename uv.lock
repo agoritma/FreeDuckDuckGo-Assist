@@ -212,7 +212,7 @@ standard = [
 ]
 
 [[package]]
-name = "freeduckduckgo-assist"
+name = "duckgpt"
 version = "1.5.0"
 source = { virtual = "." }
 dependencies = [
