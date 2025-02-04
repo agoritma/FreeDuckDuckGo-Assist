@@ -26,12 +26,12 @@ class DuckDuckAssist:
                 else:
                     raise Exception("Failed to get token")
 
-    async def completionsStream(self, token: str, message: list):
+    async def completionsStream(self, token: str, message: list, model: str):
         completionsHeader = self.BASE_HEADER
         completionsHeader["X-Vqd-4"] = token
         completionsHeader["Accept"] = "text/event-stream"
 
-        payload = {"model": "gpt-4o-mini", "messages": message}
+        payload = {"model": model, "messages": message}
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 self.CHAT_URL, headers=completionsHeader, json=payload
@@ -53,7 +53,7 @@ class DuckDuckAssist:
                             "id": data_dict["id"],
                             "object": "chat.completion",
                             "created": data_dict["created"],
-                            "model": "gpt-4o-mini",
+                            "model": model,
                             "usage": {
                                 "prompt_tokens": 0,
                                 "completion_tokens": 0,
@@ -81,12 +81,12 @@ class DuckDuckAssist:
                     except KeyError:
                         pass
 
-    async def completions(self, token: str, message: list):
+    async def completions(self, token: str, message: list, model: str):
         conHeader = self.BASE_HEADER
         conHeader["X-Vqd-4"] = token
         conHeader["Accept"] = "text/event-stream"
 
-        payload = {"model": "gpt-4o-mini", "messages": message}
+        payload = {"model": model, "messages": message}
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 self.CHAT_URL, headers=conHeader, json=payload
@@ -111,7 +111,7 @@ class DuckDuckAssist:
                     "id": data_dict["id"],
                     "object": "chat.completion",
                     "created": data_dict["created"],
-                    "model": "gpt-4o-mini",
+                    "model": model,
                     "usage": {
                         "prompt_tokens": 0,
                         "completion_tokens": 0,

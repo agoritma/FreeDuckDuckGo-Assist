@@ -34,6 +34,7 @@ async def getToken():
 
 class ConversationBody(BaseModel):
     token: str = "use /v1/get-token to get token"
+    model: str = "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"
     message: list = [{"role": "user", "content": ""}]
     stream: bool = True
 
@@ -42,12 +43,13 @@ class ConversationBody(BaseModel):
 async def completions(body: ConversationBody):
     if body.stream:
         resp = StreamingResponse(
-            assist.completionsStream(body.token, body.message),
+            assist.completionsStream(body.token, body.message, body.model),
             media_type="text/event-stream",
         )
     else:
         resp = StreamingResponse(
-            assist.completions(body.token, body.message), media_type="text/plain"
+            assist.completions(body.token, body.message, body.model),
+            media_type="text/plain",
         )
     return resp
 
@@ -58,4 +60,4 @@ if __name__ == "__main__":
     HOST = os.getenv("BASE_API_HOST")
     PORT = os.getenv("BASE_API_PORT")
 
-    uvicorn.run("duckgpt.__main__:app", host=HOST, port=int(PORT), reload=True)
+    uvicorn.run("duckgpt.main:app", host=HOST, port=int(PORT), reload=True)
